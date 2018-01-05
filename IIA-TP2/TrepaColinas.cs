@@ -30,7 +30,7 @@ namespace IIA_TP2
                 --newHip.NCMoedas[rand];
             if (old.valido > 0)
                 ++newHip.NCMoedas[rand];
-
+            
             for (int i = 0; i < newHip.NCMoedas.Count; i++)
             {
                 if (newHip.NCMoedas[i] < 0)
