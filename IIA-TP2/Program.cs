@@ -7,7 +7,32 @@ namespace IIA_TP2
     internal class Program
     {
         private const string InvalidFomat = "Formato Inváido";
-        public const bool debug = true;
+        public const bool debug = false;
+
+        public static void MainT(string[] args)
+        {
+            var name = "instancia_teste.txt";
+            var data = getData(name);
+            if (debug)
+            {
+                if (data == null)
+                {
+                    Console.Out.WriteLine("data a null");
+                    return;
+                }
+                Console.Out.WriteLine("Numero de Moedas: " + data.numeroMoedas);
+                Console.Out.WriteLine("Objetivo: " + data.objetivo);
+                Console.Out.WriteLine("Moedas:");
+                                
+                foreach (var i in data.moedas)
+                {
+                    Console.Out.Write(i + "  ");
+                }
+                Console.Out.WriteLine();
+            }
+            var alg = new TrepaColinas(data);
+            alg.run();
+        }
 
         public static void Main(string[] args)
         {
@@ -29,8 +54,8 @@ namespace IIA_TP2
                 }
                 Console.Out.WriteLine();
             }
-            var alg = new TrepaColinas(data);
-           alg.run();
+            var alg = new Evolutivo(data);
+            alg.run();
         }
 
         private static Data getData(string nameFile)

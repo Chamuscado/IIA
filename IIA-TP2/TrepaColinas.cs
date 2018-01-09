@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using IIA_TP2.Properties;
 
 namespace IIA_TP2
 {
@@ -82,70 +83,18 @@ namespace IIA_TP2
             return hip;
         }
 
-
-        public class Hipotese
+        public class Hipotese_TrepaColinas : Hipotese
         {
-            public List<int> NCMoedas { get; set; }
-            public int? valido { get; private set; }
-            public double? eval { get; private set; }
-            public double? sum { get; private set; }
-            public double? pelidade { get; private set; }
-            private Data _data;
-
-            public Hipotese(List<int> list, Data data)
+            public Hipotese_TrepaColinas(List<int> list, Data data) : base(list, data)
             {
-                NCMoedas = list;
-                valido = null;
-                eval = null;
-                sum = null;
-                pelidade = null;
-                _data = data;
             }
 
-            public Hipotese(Data data)
+            public Hipotese_TrepaColinas(Data data) : base(data)
             {
-                NCMoedas = new List<int>();
-                valido = null;
-                eval = null;
-                sum = null;
-                pelidade = null;
-                _data = data;
-                for (int i = 0; i < data.moedas.Count; ++i)
-                    NCMoedas.Add(0);
             }
 
-            public Hipotese(Hipotese hip)
+            public Hipotese_TrepaColinas(Hipotese hip) : base(hip)
             {
-                NCMoedas = new List<int>(hip.NCMoedas);
-                valido = null;
-                eval = null;
-                sum = null;
-                pelidade = null;
-                _data = hip._data;
-            }
-
-            public double? evaluate()
-            {
-                eval = 0.0;
-                sum = 0.0;
-                pelidade = 0.0;
-                valido = 0;
-                for (int i = 0; i < NCMoedas.Count; ++i)
-                {
-                    eval += NCMoedas[i];
-                    sum += NCMoedas[i] * _data.moedas[i];
-                }
-                if (sum != _data.objetivo)
-                {
-                    if (Program.debug)
-                        Console.Out.WriteLine("solucao invalida");
-                    pelidade = sum - _data.objetivo;
-                    if (sum < _data.objetivo)
-                        valido = 1;
-                    else
-                        valido = -1;
-                }
-                return eval;
             }
         }
     }
