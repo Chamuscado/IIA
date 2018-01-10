@@ -47,6 +47,7 @@ namespace IIA_TP2
             Hipotese hip = init();
 
             hip.evaluate();
+            if(Program.debug)
             imprimeHipotese(hip); 
 
 
@@ -54,11 +55,13 @@ namespace IIA_TP2
             {
                 hip = gera_vizinho(hip);
                 hip.evaluate();
-             imprimeHipotese(hip);   
+             if(Program.debug)
+                imprimeHipotese(hip);   
 
                 if (hip.valido == 0)
                 {
                     Console.Out.WriteLine("Solução encontrada, Iteração: " + i);
+                    imprimeHipotese(hip);
                     break;
                 }
             }
@@ -70,7 +73,7 @@ namespace IIA_TP2
                                   hip.pelidade + " valido: " + hip.valido + " Valor: " + hip.sum);
             for (var i = 0; i < hip.NCMoedas.Count; i++)
             {
-                Console.Out.Write(hip.NCMoedas[i] + " de " + data.moedas[i] + "€ ");
+                Console.Out.Write(hip.NCMoedas[i] + " de " + data.moedas[i] + "e ");
             }
             Console.Out.WriteLine();
         }

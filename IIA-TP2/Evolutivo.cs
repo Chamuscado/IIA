@@ -21,8 +21,8 @@ namespace IIA_TP2
         {
             probabilidadeCrossover = 0.5;
             probabilidadeMutation = 0.5;
-            maxGeracoes = 10000;
-            popSize = 100;
+            maxGeracoes = 100000000;
+            popSize = 1000;
 
             rand = new Random();
             this.data = data.Clone();
@@ -225,7 +225,7 @@ namespace IIA_TP2
 
         private int getRandN()
         {
-            return rand.Next(0, 10); // TODO -> temos de verificar o valor maximo
+            return 0;//rand.Next(0, pop.Count); // TODO -> temos de verificar o valor maximo
         }
 
         private class HipoteseEvol : Hipotese
