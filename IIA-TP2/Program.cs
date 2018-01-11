@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
+
 namespace IIA_TP2
 {
     internal class Program
@@ -9,28 +10,26 @@ namespace IIA_TP2
         private const string InvalidFomat = "Formato Inváido";
         public const bool debug = false;
 
-        public static void MainT(string[] args)
+        public static void Mainw(string[] args)
         {
             var name = "instancia_teste.txt";
             var data = getData(name);
-            if (debug)
+            if (data == null)
             {
-                if (data == null)
-                {
-                    Console.Out.WriteLine("data a null");
-                    return;
-                }
-                Console.Out.WriteLine("Numero de Moedas: " + data.numeroMoedas);
-                Console.Out.WriteLine("Objetivo: " + data.objetivo);
-                Console.Out.WriteLine("Moedas:");
-                                
-                foreach (var i in data.moedas)
-                {
-                    Console.Out.Write(i + "  ");
-                }
-                Console.Out.WriteLine();
+                Console.Out.WriteLine("data a null");
+                return;
             }
+
+
             var alg = new TrepaColinas(data);
+            alg.run();
+        }
+
+        public static void MainE(string[] args)
+        {
+            var name = "instancia_teste.txt";
+            var data = getData(name);
+            var alg = new Evolutivo(data);
             alg.run();
         }
 
@@ -38,24 +37,45 @@ namespace IIA_TP2
         {
             var name = "instancia_teste.txt";
             var data = getData(name);
-            if (debug)
-            {
-                if (data == null)
-                {
-                    Console.Out.WriteLine("data a null");
-                    return;
-                }
-                Console.Out.WriteLine("Numero de Moedas: " + data.numeroMoedas);
-                Console.Out.WriteLine("Objetivo: " + data.objetivo);
-                Console.Out.WriteLine("Moedas:");
-                foreach (var i in data.moedas)
-                {
-                    Console.Out.Write(i + "  ");
-                }
-                Console.Out.WriteLine();
-            }
-            var alg = new Evolutivo(data);
+            data.MaxIteracoes = 10000;
+            var alg = new Hibrido(data);
             alg.run();
+            var hip = alg.solEHibrido;
+            CSVFile file = new CSVFile();
+            int x;
+            int yy = 0;
+            file.Write(0, yy, "Moedas");
+            for ( x = 0; x < data.moedas.Count; ++x)
+            {
+                file.Write(x+1, yy, data.moedas[x].ToString()+"e");
+            }
+            ++yy;
+            file.Write(0, yy, "Evolutivo");
+            for ( x = 0; x < hip.NCMoedas.Count; ++x)
+            {
+                file.Write(x+1, yy, $"{hip.NCMoedas[x]}");
+            }
+            file.Write(x+1, yy, hip.sum.ToString());
+            hip = alg.solTrepaColinas;
+            ++yy;
+            file.Write(0, yy, "Trepa-Colinas");
+            for ( x = 0; x < hip.NCMoedas.Count; ++x)
+            {
+                file.Write(x+1, yy, hip.NCMoedas[x].ToString());
+            }
+            file.Write(x+1, yy, hip.sum.ToString());
+            hip = alg.getBest();
+            ++yy;
+            file.Write(0, yy, "Hibrido");
+            for ( x = 0; x < hip.NCMoedas.Count; ++x)
+            {
+                file.Write(x + 1, yy, hip.NCMoedas[x].ToString());
+            }
+            file.Write(x+1, yy, hip.sum.ToString());
+            ++yy;
+            file.Write(0, yy, "Valor");file.Write(1, yy,data.objetivo.ToString());
+            
+            file.toFile("firstTest");
         }
 
         private static Data getData(string nameFile)

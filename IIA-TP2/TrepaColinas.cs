@@ -5,20 +5,17 @@ using IIA_TP2.Properties;
 
 namespace IIA_TP2
 {
-    public class TrepaColinas
+    public class TrepaColinas: IAAlgoritm
     {
-        private readonly Random rand;
-        private Data data;
-        private Hipotese bestSol;
-        private int maxInteracoes;
+        
+        public TrepaColinas(Data data) : base(data)
+        {   
+            bestSol = init();
+        }
 
-        public TrepaColinas(Data data)
+        public TrepaColinas(Data data, Hipotese init) : base(data)
         {
-            this.data = data.Clone();
-            this.data.moedas.Sort();
-            this.data.MaxIteracoes = (int) (this.data.objetivo / this.data.moedas.First());
-            maxInteracoes = -1;
-            rand = new Random();
+            bestSol = init;
         }
 
         private Hipotese gera_vizinho(Hipotese old)
@@ -26,12 +23,12 @@ namespace IIA_TP2
             var newHip = new Hipotese(old);
 
             var rand = this.rand.Next(newHip.NCMoedas.Count);
-            
+
             if (old.valido < 0)
                 --newHip.NCMoedas[rand];
             if (old.valido > 0)
                 ++newHip.NCMoedas[rand];
-            
+
             for (int i = 0; i < newHip.NCMoedas.Count; i++)
             {
                 if (newHip.NCMoedas[i] < 0)
@@ -42,40 +39,31 @@ namespace IIA_TP2
             return newHip;
         }
 
-        public void run()
+        public override void run()
         {
-            Hipotese hip = init();
+            Console.WriteLine("TrepaColinas:");
+            
+            Hipotese hip = bestSol;
 
             hip.evaluate();
-            if(Program.debug)
-            imprimeHipotese(hip); 
+            if (Program.debug)
+                imprimeHipotese(hip);
 
 
             for (var i = 0; i < data.MaxIteracoes; i++)
             {
                 hip = gera_vizinho(hip);
                 hip.evaluate();
-             if(Program.debug)
-                imprimeHipotese(hip);   
+                if (Program.debug)
+                    imprimeHipotese(hip);
 
                 if (hip.valido == 0)
                 {
                     Console.Out.WriteLine("Solução encontrada, Iteração: " + i);
-                    imprimeHipotese(hip);
+                    bestSol = hip;
                     break;
                 }
             }
-        }
-
-        public void imprimeHipotese(Hipotese hip)
-        {
-            Console.Out.WriteLine("Resultado da avaliação: " + hip.eval + " penalidade: " +
-                                  hip.pelidade + " valido: " + hip.valido + " Valor: " + hip.sum);
-            for (var i = 0; i < hip.NCMoedas.Count; i++)
-            {
-                Console.Out.Write(hip.NCMoedas[i] + " de " + data.moedas[i] + "e ");
-            }
-            Console.Out.WriteLine();
         }
 
         public Hipotese init()
@@ -86,19 +74,7 @@ namespace IIA_TP2
             return hip;
         }
 
-        public class Hipotese_TrepaColinas : Hipotese
-        {
-            public Hipotese_TrepaColinas(List<int> list, Data data) : base(list, data)
-            {
-            }
 
-            public Hipotese_TrepaColinas(Data data) : base(data)
-            {
-            }
 
-            public Hipotese_TrepaColinas(Hipotese hip) : base(hip)
-            {
-            }
-        }
     }
 }

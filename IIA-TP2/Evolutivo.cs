@@ -6,36 +6,32 @@ using IIA_TP2.Properties;
 
 namespace IIA_TP2
 {
-    public class Evolutivo
+    public class Evolutivo : IAAlgoritm
     {
-        private readonly Random rand;
-        private Data data;
+        
+        
         public int popSize { get; set; }
         private List<Hipotese> pop;
-        private Hipotese best;
         private double probabilidadeCrossover;
         private double probabilidadeMutation;
         private int maxGeracoes;
 
-        public Evolutivo(Data data)
+        public Evolutivo(Data data, double probabilidadeCrossover = 0.5, double probabilidadeMutation = 0.5, int maxGeracoes = 100, int popSize = 100) : base(data)
         {
-            probabilidadeCrossover = 0.5;
-            probabilidadeMutation = 0.5;
-            maxGeracoes = 100000000;
-            popSize = 1000;
-
-            rand = new Random();
-            this.data = data.Clone();
-            this.data.moedas.Sort();
+            this.probabilidadeCrossover = probabilidadeCrossover;
+            this.probabilidadeMutation = probabilidadeMutation;
+            this.maxGeracoes = maxGeracoes;
+            this.popSize = popSize;
             init_pop();
             evaluate();
         }
 
-
-        public void run()
+        public override void run()
         {
+            Console.WriteLine("Evolutivo:");
+            
             var numb = 0;
-            best = pop[0];
+            bestSol = pop[0];
 
             while (numb < maxGeracoes)
             {
@@ -45,16 +41,16 @@ namespace IIA_TP2
 
                 evaluate(list);
 
-                getBest(ref best, list);
+                refreshBest(list);
                 if ((numb % 25) == 0)
                 {
-                    Console.Out.Write($"Iteração: {numb} " + best.ToString());
-                    Console.Out.WriteLine(best.ToString2());
+                    Console.Out.Write($"Iteração: {numb} " + bestSol.ToString());
+                    Console.Out.WriteLine(bestSol.ToString2());
                 }
-                if (best.valido == 0)
+                if (bestSol.valido == 0)
                 {
                     Console.Out.WriteLine("Solução encontrada, Iteração: " + numb);
-                    imprimeHipotese(best);
+                    imprimeHipotese(bestSol);
                     break;
                 }
                 ++numb;
@@ -62,25 +58,16 @@ namespace IIA_TP2
             Console.Out.WriteLine("Fim! ");
         }
 
-        public void imprimeHipotese(Hipotese hip)
-        {
-            Console.Out.WriteLine("Resultado da avaliação: " + hip.eval + " penalidade: " +
-                                  hip.pelidade + " valido: " + hip.valido + " Valor: " + hip.sum);
-            for (var i = 0; i < hip.NCMoedas.Count; i++)
-            {
-                Console.Out.Write(hip.NCMoedas[i] + " de " + data.moedas[i] + "€ ");
-            }
-            Console.Out.WriteLine();
-        }
 
-        private void getBest(ref Hipotese best, List<Hipotese> atual)
+        private void refreshBest(List<Hipotese> atual)
         {
             foreach (Hipotese i in atual)
             {
-                if (best.compareTo(i) < 0)
-                    best = i;
+                if (bestSol.compareTo(i) < 0)
+                    bestSol = i;
             }
         }
+
 
         private void evaluate()
         {
@@ -98,7 +85,7 @@ namespace IIA_TP2
             }
         }
 
-        private List<Hipotese> tournament() // TODO -> Versão altamente estupida
+        private List<Hipotese> tournament()
         {
             var selecteds = new List<Hipotese>();
 
@@ -225,22 +212,7 @@ namespace IIA_TP2
 
         private int getRandN()
         {
-            return 0;//rand.Next(0, pop.Count); // TODO -> temos de verificar o valor maximo
-        }
-
-        private class HipoteseEvol : Hipotese
-        {
-            public HipoteseEvol(List<int> list, Data data) : base(list, data)
-            {
-            }
-
-            public HipoteseEvol(Data data) : base(data)
-            {
-            }
-
-            public HipoteseEvol(Hipotese hip) : base(hip)
-            {
-            }
+            return rand.Next(0, pop.Count); // TODO -> temos de verificar o valor maximo
         }
     }
 }
