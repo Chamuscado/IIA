@@ -5,11 +5,10 @@ using IIA_TP2.Properties;
 
 namespace IIA_TP2
 {
-    public class TrepaColinas: IAAlgoritm
+    public class TrepaColinas : IAAlgoritm
     {
-        
         public TrepaColinas(Data data) : base(data)
-        {   
+        {
             bestSol = init();
         }
 
@@ -18,15 +17,15 @@ namespace IIA_TP2
             bestSol = init;
         }
 
-        private Hipotese gera_vizinho(Hipotese old)
+        protected virtual Hipotese gera_vizinho(Hipotese old)
         {
-            var newHip = new Hipotese(old);
+            var newHip = new Hipotese(old, getName(), iteracao);
 
             var rand = this.rand.Next(newHip.NCMoedas.Count);
-
-            if (old.valido < 0)
+            var rand2 = this.rand.NextDouble();
+            if (rand2 < 0.5)
                 --newHip.NCMoedas[rand];
-            if (old.valido > 0)
+            else
                 ++newHip.NCMoedas[rand];
 
             for (int i = 0; i < newHip.NCMoedas.Count; i++)
@@ -41,40 +40,56 @@ namespace IIA_TP2
 
         public override void run()
         {
-            Console.WriteLine("TrepaColinas:");
-            
+            if (log)
+                Console.WriteLine("TrepaColinas:");
+
             Hipotese hip = bestSol;
 
             hip.evaluate();
             if (Program.debug)
                 imprimeHipotese(hip);
 
-
-            for (var i = 0; i < data.MaxIteracoes; i++)
+            for (iteracao = 0; iteracao < data.MaxIteracoes; ++iteracao)
             {
                 hip = gera_vizinho(hip);
                 hip.evaluate();
+
                 if (Program.debug)
                     imprimeHipotese(hip);
 
+                if (bestSol.compareTo(hip) < 0)
+                    bestSol = hip;
                 if (hip.valido == 0)
                 {
-                    Console.Out.WriteLine("Solução encontrada, Iteração: " + i);
-                    bestSol = hip;
+                    if (log)
+                        Console.Out.WriteLine("Solução encontrada, Iteração: " + iteracao);
                     break;
                 }
             }
         }
 
-        public Hipotese init()
+        public override string descricao()
         {
-            var hip = new Hipotese(data);
+            return
+                "TrepaColinas : Gera Vizinho de forma random e inicia tudo a 0";
+        }
+
+        public override string getName()
+        {
+            return "TrepaColinas";
+        }
+
+        public virtual Hipotese init()
+        {
+            var hip = new Hipotese(data, getName(), iteracao);
             for (var i = 0; i < hip.NCMoedas.Count; ++i)
                 hip.NCMoedas[i] = 0;
             return hip;
         }
 
-
-
+        public virtual void setSolInit(Hipotese initSol)
+        {
+            bestSol = initSol;
+        }
     }
 }

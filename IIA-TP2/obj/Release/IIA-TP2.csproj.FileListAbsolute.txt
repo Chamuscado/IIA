@@ -1,0 +1,5 @@
+E:\RiderProjects\IIA-TP2\IIA-TP2\bin\Release\IIA_TP2.exe
+E:\RiderProjects\IIA-TP2\IIA-TP2\bin\Release\IIA_TP2.pdb
+E:\RiderProjects\IIA-TP2\IIA-TP2\obj\Release\IIA-TP2.csprojResolveAssemblyReference.cache
+E:\RiderProjects\IIA-TP2\IIA-TP2\obj\Release\IIA_TP2.exe
+E:\RiderProjects\IIA-TP2\IIA-TP2\obj\Release\IIA_TP2.pdb

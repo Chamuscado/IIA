@@ -8,18 +8,24 @@ namespace IIA_TP2.Properties
         protected Data data;
         protected Hipotese bestSol;
         protected readonly Random rand;
-
+        protected int iteracao;
+        public bool log { get; set; }
+        
         protected IAAlgoritm(Data data)
         {
-            this.data = data.Clone();
-            this.data.moedas.Sort();
-            this.data.MaxIteracoes = (int) (this.data.objetivo / this.data.moedas.First());
+            log = true;
+            iteracao = 0;
             this.data = data;
-            rand = new Random();
+            this.data.MaxIteracoes = (int) (this.data.objetivo / this.data.moedas.First());
+            rand = new Random(GetHashCode());
         }
 
         public abstract void run();
-        
+
+        public abstract string descricao();
+
+        public abstract string getName();
+
         public void imprimeHipotese(Hipotese hip)
         {
             Console.Out.WriteLine("Resultado da avaliação: " + hip.eval + " penalidade: " +
@@ -30,10 +36,15 @@ namespace IIA_TP2.Properties
             }
             Console.Out.WriteLine();
         }
-        
+
         public Hipotese getBest()
         {
             return bestSol;
+        }
+
+        public Data getData()
+        {
+            return data;
         }
     }
 }

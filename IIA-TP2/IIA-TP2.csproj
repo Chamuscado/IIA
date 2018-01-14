@@ -41,16 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Algoritmos\Evolutivo.cs" />
+    <Compile Include="Algoritmos\EvolutivoV2.cs" />
+    <Compile Include="Algoritmos\Hibrido.cs" />
+    <Compile Include="Algoritmos\IAAlgoritm.cs" />
+    <Compile Include="Algoritmos\TrepaColinas.cs" />
+    <Compile Include="Algoritmos\TrepaColinasV2.cs" />
+    <Compile Include="Algoritmos\TrepaColinasV3.cs" />
     <Compile Include="CSVFile.cs" />
     <Compile Include="Data.cs" />
-    <Compile Include="Evolutivo.cs" />
-    <Compile Include="Hibrido.cs" />
     <Compile Include="Hipotese.cs" />
-    <Compile Include="IAAlgoritm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Test.cs" />
-    <Compile Include="TrepaColinas.cs" />
+    <Compile Include="TestEvolutivo.cs" />
+    <Compile Include="TestHibrido.cs" />
+    <Compile Include="TestTrepaColinas.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

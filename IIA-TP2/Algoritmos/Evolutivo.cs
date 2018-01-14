@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using IIA_TP2.Properties;
 
 namespace IIA_TP2
 {
     public class Evolutivo : IAAlgoritm
     {
-        
-        
         public int popSize { get; set; }
-        private List<Hipotese> pop;
-        private double probabilidadeCrossover;
-        private double probabilidadeMutation;
-        private int maxGeracoes;
+        public double probabilidadeCrossover { get; set; }
+        public double probabilidadeMutation { get; set; }
 
-        public Evolutivo(Data data, double probabilidadeCrossover = 0.5, double probabilidadeMutation = 0.5, int maxGeracoes = 100, int popSize = 100) : base(data)
+
+        private List<Hipotese> pop;
+        public int maxGeracoes { get; set; }
+
+        public Evolutivo(Data data, double probabilidadeCrossover = 0.05, double probabilidadeMutation = 0.05,
+            int maxGeracoes = 100, int popSize = 100) : base(data)
         {
             this.probabilidadeCrossover = probabilidadeCrossover;
             this.probabilidadeMutation = probabilidadeMutation;
@@ -28,12 +27,12 @@ namespace IIA_TP2
 
         public override void run()
         {
-            Console.WriteLine("Evolutivo:");
-            
-            var numb = 0;
+            //Console.WriteLine("Evolutivo:");
+
+            iteracao = 0;
             bestSol = pop[0];
 
-            while (numb < maxGeracoes)
+            while (iteracao < maxGeracoes)
             {
                 var list = tournament();
 
@@ -42,24 +41,35 @@ namespace IIA_TP2
                 evaluate(list);
 
                 refreshBest(list);
-                if ((numb % 25) == 0)
+                if ((iteracao % 25) == 0 && log)
                 {
-                    Console.Out.Write($"Iteração: {numb} " + bestSol.ToString());
+                    Console.Out.Write($"Iteração: {iteracao} " + bestSol.ToString());
                     Console.Out.WriteLine(bestSol.ToString2());
                 }
-                if (bestSol.valido == 0)
+                if (bestSol.valido == 0 && log)
                 {
-                    Console.Out.WriteLine("Solução encontrada, Iteração: " + numb);
+                    Console.Out.WriteLine("Solução encontrada, Iteração: " + iteracao);
                     imprimeHipotese(bestSol);
                     break;
                 }
-                ++numb;
+                ++iteracao;
             }
-            Console.Out.WriteLine("Fim! ");
+            //Console.Out.WriteLine("Fim! ");
+        }
+
+        public override string descricao()
+        {
+            return
+                "Evolutivo : mutação aleatória, crossover original, inicia com valores aleatorios entre 0 e e 1/50 do numero maximo de moedas possivel";
+        }
+
+        public override string getName()
+        {
+            return "Evolutivo";
         }
 
 
-        private void refreshBest(List<Hipotese> atual)
+        protected void refreshBest(List<Hipotese> atual)
         {
             foreach (Hipotese i in atual)
             {
@@ -69,7 +79,7 @@ namespace IIA_TP2
         }
 
 
-        private void evaluate()
+        protected void evaluate()
         {
             foreach (var i in pop)
             {
@@ -77,7 +87,7 @@ namespace IIA_TP2
             }
         }
 
-        private void evaluate(List<Hipotese> list)
+        protected void evaluate(List<Hipotese> list)
         {
             foreach (var i in list)
             {
@@ -85,7 +95,7 @@ namespace IIA_TP2
             }
         }
 
-        private List<Hipotese> tournament()
+        protected List<Hipotese> tournament()
         {
             var selecteds = new List<Hipotese>();
 
@@ -103,7 +113,7 @@ namespace IIA_TP2
             return selecteds;
         }
 
-        private List<Hipotese> genetic_operators(List<Hipotese> list)
+        protected List<Hipotese> genetic_operators(List<Hipotese> list)
         {
             if (Program.debug)
                 imprimeHipotese(list, "antes crossover");
@@ -117,12 +127,13 @@ namespace IIA_TP2
 
             if (Program.debug)
                 imprimeHipotese(list, "depois do genetic_operators");
+
             return list;
 
             //return mutation(crossover(list));
         }
 
-        private void imprimeHipotese(List<Hipotese> list, string msg = "")
+        protected void imprimeHipotese(List<Hipotese> list, string msg = "")
         {
             Console.Out.WriteLine(msg);
             evaluate(list);
@@ -134,12 +145,12 @@ namespace IIA_TP2
             }
         }
 
-        private List<Hipotese> crossover(List<Hipotese> list)
+        protected List<Hipotese> crossover(List<Hipotese> list)
         {
             var secondList = new List<Hipotese>();
             foreach (Hipotese t in list)
             {
-                secondList.Add(new Hipotese(t));
+                secondList.Add(new Hipotese(t, getName(), iteracao));
             }
             int j, point;
 
@@ -169,13 +180,13 @@ namespace IIA_TP2
             return secondList;
         }
 
-        private List<Hipotese> mutation(List<Hipotese> list)
+        protected virtual List<Hipotese> mutation(List<Hipotese> list)
         {
             int i, j;
             var secondList = new List<Hipotese>();
             foreach (Hipotese t in list)
             {
-                secondList.Add(new Hipotese(t));
+                secondList.Add(new Hipotese(t, getName(), iteracao));
             }
             var rand = this.rand.Next(data.moedas.Count);
 
@@ -185,9 +196,12 @@ namespace IIA_TP2
                 {
                     if (this.rand.NextDouble() < probabilidadeMutation)
                     {
-                        if (secondList[i].valido < 0)
-                            --secondList[i].NCMoedas[rand];
-                        if (secondList[i].valido > 0)
+                        if (this.rand.NextDouble() < 50)
+                        {
+                            if (secondList[i].NCMoedas[rand] > 0)
+                                --secondList[i].NCMoedas[rand];
+                        }
+                        else
                             ++secondList[i].NCMoedas[rand];
                     }
                 }
@@ -195,24 +209,25 @@ namespace IIA_TP2
             return secondList;
         }
 
-        private void init_pop()
+        protected void init_pop()
         {
+            var max = (int) (data.objetivo / data.moedas[0] / 50);
             pop = new List<Hipotese>();
 
             for (var i = 0; i < popSize; i++)
             {
-                var hip = new Hipotese(data);
+                var hip = new Hipotese(data, getName(), iteracao);
                 for (var j = 0; j < data.moedas.Count; j++)
                 {
-                    hip.NCMoedas[j] = getRandN();
+                    hip.NCMoedas[j] = getRandN(max);
                 }
                 pop.Add(hip);
             }
         }
 
-        private int getRandN()
+        protected int getRandN(int max)
         {
-            return rand.Next(0, pop.Count); // TODO -> temos de verificar o valor maximo
+            return rand.Next(0, max);
         }
     }
 }
